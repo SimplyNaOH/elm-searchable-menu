@@ -72,13 +72,16 @@ update msg model =
 
                     ( updatedMenu, menuCmd, maybeMsg ) =
                         SearchableMenu.update config msg model.topicMenu exampleTopics
+
+                    updatedModel =
+                        { model | topicMenu = updatedMenu }
                 in
                     case maybeMsg of
                         Nothing ->
-                            ( { model | topicMenu = updatedMenu }, Cmd.map TopicMenuMsg menuCmd )
+                            ( updatedModel, Cmd.map AdvancedMenuMsg menuCmd )
 
                         Just msg ->
-                            attachCmd (update msg model) (Cmd.map TopicMenuMsg menuCmd)
+                            attachCmd (update msg updatedModel) (Cmd.map TopicMenuMsg menuCmd)
 
             AdvancedMenuMsg msg ->
                 let
@@ -91,13 +94,16 @@ update msg model =
 
                     ( updatedMenu, menuCmd, maybeMsg ) =
                         SearchableMenu.update config msg model.advancedMenu exampleTopics
+
+                    updatedModel =
+                        { model | advancedMenu = updatedMenu }
                 in
                     case maybeMsg of
                         Nothing ->
-                            ( { model | advancedMenu = updatedMenu }, Cmd.map AdvancedMenuMsg menuCmd )
+                            ( updatedModel, Cmd.map AdvancedMenuMsg menuCmd )
 
                         Just msg ->
-                            attachCmd (update msg model) (Cmd.map AdvancedMenuMsg menuCmd)
+                            attachCmd (update msg updatedModel) (Cmd.map AdvancedMenuMsg menuCmd)
 
             NoOp ->
                 noCmd model
