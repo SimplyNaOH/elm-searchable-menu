@@ -188,8 +188,8 @@ type alias ViewConfig a =
     , ul : List (Attribute Never)
     , li : IsSelected -> SearchResult a -> HtmlDetails Msg
     , input : List (Attribute Never)
-    , prepend : Maybe (Html Msg)
-    , append : Maybe (Html Msg)
+    , prepend : Maybe (HtmlDetails Msg)
+    , append : Maybe (HtmlDetails Msg)
     }
 
 
@@ -232,21 +232,24 @@ view config model data =
         viewAndId i item =
             ( config.toId (Tuple.second item), toLi <| config.li (isSelected i) item )
 
-        children =
-            [ textbox config model.searchString
-            , ul (List.map mapNeverToMsg config.ul) <|
-                List.indexedMap viewAndId <|
-                    search model.searchString config.toId data
-            ]
-                ++ Maybe.withDefault [] (Maybe.map (\x -> [ x ]) config.append)
-    in
-        div (mouseOnDivAttributes ++ customDivAttributes) <|
+        dataList =
+            List.indexedMap viewAndId <| search model.searchString config.toId data
+
+        appendix =
+            Maybe.withDefault [] (Maybe.map (\x -> [ ( "appendix", toLi x ) ]) config.append)
+
+        list =
             case config.prepend of
                 Nothing ->
-                    children
+                    dataList ++ appendix
 
                 Just prepend ->
-                    prepend :: children
+                    ( "prepend", toLi prepend ) :: dataList ++ appendix
+    in
+        div (mouseOnDivAttributes ++ customDivAttributes)
+            [ textbox config model.searchString
+            , ul (List.map mapNeverToMsg config.ul) list
+            ]
 
 
 simpleSpanView : List (Html.Attribute Never) -> SearchResult a -> List (Html Msg)

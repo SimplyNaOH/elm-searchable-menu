@@ -15,7 +15,7 @@ decomposeMatch : String -> String -> MatchedString
 decomposeMatch str source =
     let
         indices =
-            String.indices str source
+            String.indices (String.toLower str) source
     in
         case indices of
             [] ->

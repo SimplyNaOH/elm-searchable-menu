@@ -33,7 +33,7 @@ initialModel =
 
 type Msg
     = ToggleTopic String
-    | ToggleOtherTopics String
+    | ToggleOtherTopic String
     | TopicMenuMsg SearchableMenu.Msg
     | AdvancedMenuMsg SearchableMenu.Msg
     | NoOp
@@ -58,7 +58,7 @@ update msg model =
             ToggleTopic name ->
                 noCmd { model | topics = toggle name model.topics }
 
-            ToggleOtherTopics name ->
+            ToggleOtherTopic name ->
                 noCmd { model | otherTopics = toggle name model.otherTopics }
 
             TopicMenuMsg msg ->
@@ -86,7 +86,7 @@ update msg model =
                         SearchableMenu.updateConfig
                             { toId = .name
                             , textboxId = "topic-menu__input2"
-                            , onSelectMsg = ToggleOtherTopics
+                            , onSelectMsg = ToggleOtherTopic
                             }
 
                     ( updatedMenu, menuCmd, maybeMsg ) =
@@ -107,12 +107,12 @@ update msg model =
 -- View
 
 
-topicView : Topic -> Html Msg
-topicView topic =
+topicView : (String -> Msg) -> Topic -> Html Msg
+topicView msg topic =
     li [ class "topic-container__topic" ]
         [ a
             [ href "#0"
-            , onClick <| ToggleTopic topic.name
+            , onClick <| msg topic.name
             , style [ ( "color", topic.color ) ]
             ]
             [ text topic.name ]
@@ -182,12 +182,16 @@ advancedMenuViewConfig model =
         , prepend = Nothing
         , append =
             Just <|
-                a
-                    [ href "#0"
-                    , class "advanced-menu__close-button"
-                    , onClick <| SearchableMenu.closeMsg
+                { attributes = []
+                , children =
+                    [ a
+                        [ href "#0"
+                        , class "advanced-menu__close-button"
+                        , onClick <| SearchableMenu.closeMsg
+                        ]
+                        [ text "Close" ]
                     ]
-                    [ text "Close" ]
+                }
         }
 
 
@@ -205,12 +209,12 @@ view model =
     div []
         [ h2 [] [ text "Select some topics" ]
         , ul [ class "topic-container" ] <|
-            List.map topicView model.topics
+            List.map (topicView ToggleTopic) model.topics
         , openButton TopicMenuMsg
         , Html.map TopicMenuMsg <| SearchableMenu.view topicMenuViewConfig model.topicMenu exampleTopics
         , h2 [] [ text "Select some other topics" ]
         , ul [ class "topic-container" ] <|
-            List.map topicView model.otherTopics
+            List.map (topicView ToggleOtherTopic) model.otherTopics
         , Html.map AdvancedMenuMsg <| SearchableMenu.view (advancedMenuViewConfig model) model.advancedMenu exampleTopics
         ]
 
