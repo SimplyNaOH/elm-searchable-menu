@@ -8682,7 +8682,10 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_Search$simpleSpanView = F2(
 	});
 var _SimplyNaOH$searchablemenu$SearchableMenu_Search$decomposeMatch = F2(
 	function (str, source) {
-		var indices = A2(_elm_lang$core$String$indices, str, source);
+		var indices = A2(
+			_elm_lang$core$String$indices,
+			_elm_lang$core$String$toLower(str),
+			source);
 		var _p5 = indices;
 		if (_p5.ctor === '[]') {
 			return {
@@ -9046,36 +9049,43 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$view = F3(
 							item))
 				};
 			});
-		var children = A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
-				ctor: '::',
-				_0: A2(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$textbox, config, model.searchString),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html_Keyed$ul,
-						A2(_elm_lang$core$List$map, _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$mapNeverToMsg, config.ul),
-						A2(
-							_elm_lang$core$List$indexedMap,
-							viewAndId,
-							A3(_SimplyNaOH$searchablemenu$SearchableMenu_Search$search, model.searchString, config.toId, data))),
-					_1: {ctor: '[]'}
-				}
-			},
+		var dataList = A2(
+			_elm_lang$core$List$indexedMap,
+			viewAndId,
+			A3(_SimplyNaOH$searchablemenu$SearchableMenu_Search$search, model.searchString, config.toId, data));
+		var appendix = A2(
+			_elm_lang$core$Maybe$withDefault,
+			{ctor: '[]'},
 			A2(
-				_elm_lang$core$Maybe$withDefault,
-				{ctor: '[]'},
-				A2(
-					_elm_lang$core$Maybe$map,
-					function (x) {
-						return {
-							ctor: '::',
-							_0: x,
-							_1: {ctor: '[]'}
-						};
+				_elm_lang$core$Maybe$map,
+				function (x) {
+					return {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'appendix',
+							_1: toLi(x)
+						},
+						_1: {ctor: '[]'}
+					};
+				},
+				config.append));
+		var list = function () {
+			var _p8 = config.prepend;
+			if (_p8.ctor === 'Nothing') {
+				return A2(_elm_lang$core$Basics_ops['++'], dataList, appendix);
+			} else {
+				return {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'prepend',
+						_1: toLi(_p8._0)
 					},
-					config.append)));
+					_1: A2(_elm_lang$core$Basics_ops['++'], dataList, appendix)
+				};
+			}
+		}();
 		var customDivAttributes = A2(
 			_elm_lang$core$List$map,
 			_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$mapNeverToMsg,
@@ -9094,14 +9104,18 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$view = F3(
 		return A2(
 			_elm_lang$html$Html$div,
 			A2(_elm_lang$core$Basics_ops['++'], mouseOnDivAttributes, customDivAttributes),
-			function () {
-				var _p8 = config.prepend;
-				if (_p8.ctor === 'Nothing') {
-					return children;
-				} else {
-					return {ctor: '::', _0: _p8._0, _1: children};
+			{
+				ctor: '::',
+				_0: A2(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$textbox, config, model.searchString),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html_Keyed$ul,
+						A2(_elm_lang$core$List$map, _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$mapNeverToMsg, config.ul),
+						list),
+					_1: {ctor: '[]'}
 				}
-			}());
+			});
 	});
 
 var _SimplyNaOH$searchablemenu$SearchableMenu$Model = function (a) {
@@ -9163,31 +9177,26 @@ var _SimplyNaOH$searchablemenu$SearchableMenu$viewConfig = function (config) {
 		var _p13 = _p12;
 		return _p13._0;
 	};
+	var mapHtmlDetails = function (_p14) {
+		var _p15 = _p14;
+		return {
+			attributes: A2(
+				_elm_lang$core$List$map,
+				_elm_lang$html$Html_Attributes$map(unboxMsg),
+				_p15.attributes),
+			children: A2(
+				_elm_lang$core$List$map,
+				_elm_lang$html$Html$map(unboxMsg),
+				_p15.children)
+		};
+	};
 	var li = F2(
 		function (isSelected, result) {
-			return function (_p14) {
-				var _p15 = _p14;
-				return {
-					attributes: A2(
-						_elm_lang$core$List$map,
-						_elm_lang$html$Html_Attributes$map(unboxMsg),
-						_p15.attributes),
-					children: A2(
-						_elm_lang$core$List$map,
-						_elm_lang$html$Html$map(unboxMsg),
-						_p15.children)
-				};
-			}(
+			return mapHtmlDetails(
 				A2(config.li, isSelected, result));
 		});
-	var prepend = A2(
-		_elm_lang$core$Maybe$map,
-		_elm_lang$html$Html$map(unboxMsg),
-		config.prepend);
-	var append = A2(
-		_elm_lang$core$Maybe$map,
-		_elm_lang$html$Html$map(unboxMsg),
-		config.append);
+	var prepend = A2(_elm_lang$core$Maybe$map, mapHtmlDetails, config.prepend);
+	var append = A2(_elm_lang$core$Maybe$map, mapHtmlDetails, config.append);
 	return _SimplyNaOH$searchablemenu$SearchableMenu$ViewConfig(
 		_elm_lang$core$Native_Utils.update(
 			config,
@@ -9195,10 +9204,57 @@ var _SimplyNaOH$searchablemenu$SearchableMenu$viewConfig = function (config) {
 };
 var _SimplyNaOH$searchablemenu$SearchableMenu$viewConfigWithClasses = function (_p16) {
 	var _p17 = _p16;
-	var _p19 = _p17.toId;
+	var _p23 = _p17.toId;
+	var _p22 = _p17.selectedClass;
+	var _p21 = _p17.matchedSpanClass;
+	var _p20 = _p17.liClass;
+	var simpleLiView = F2(
+		function (isSelected, result) {
+			return {
+				attributes: {
+					ctor: '::',
+					_0: isSelected ? _elm_lang$html$Html_Attributes$class(_p22) : _elm_lang$html$Html_Attributes$class(_p20),
+					_1: {ctor: '[]'}
+				},
+				children: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$a,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$href('#0'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									_SimplyNaOH$searchablemenu$SearchableMenu$Msg(
+										_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Select(
+											function (_p18) {
+												return _p23(
+													_elm_lang$core$Tuple$second(_p18));
+											}(result)))),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onBlur(
+										_SimplyNaOH$searchablemenu$SearchableMenu$Msg(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$LostFocus)),
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						A2(
+							_SimplyNaOH$searchablemenu$SearchableMenu$simpleSpanView,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class(_p21),
+								_1: {ctor: '[]'}
+							},
+							result)),
+					_1: {ctor: '[]'}
+				}
+			};
+		});
 	return _SimplyNaOH$searchablemenu$SearchableMenu$viewConfig(
 		{
-			toId: _p19,
+			toId: _p23,
 			div: function (isOpen) {
 				return isOpen ? {
 					ctor: '::',
@@ -9221,7 +9277,7 @@ var _SimplyNaOH$searchablemenu$SearchableMenu$viewConfigWithClasses = function (
 						_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$HtmlDetails,
 						{
 							ctor: '::',
-							_0: isSelected ? _elm_lang$html$Html_Attributes$class(_p17.selectedClass) : _elm_lang$html$Html_Attributes$class(_p17.liClass),
+							_0: isSelected ? _elm_lang$html$Html_Attributes$class(_p22) : _elm_lang$html$Html_Attributes$class(_p20),
 							_1: {ctor: '[]'}
 						},
 						{
@@ -9236,9 +9292,9 @@ var _SimplyNaOH$searchablemenu$SearchableMenu$viewConfigWithClasses = function (
 										_0: _elm_lang$html$Html_Events$onClick(
 											_SimplyNaOH$searchablemenu$SearchableMenu$Msg(
 												_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Select(
-													function (_p18) {
-														return _p19(
-															_elm_lang$core$Tuple$second(_p18));
+													function (_p19) {
+														return _p23(
+															_elm_lang$core$Tuple$second(_p19));
 													}(result)))),
 										_1: {
 											ctor: '::',
@@ -9252,7 +9308,7 @@ var _SimplyNaOH$searchablemenu$SearchableMenu$viewConfigWithClasses = function (
 									_SimplyNaOH$searchablemenu$SearchableMenu$simpleSpanView,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class(_p17.matchedSpanClass),
+										_0: _elm_lang$html$Html_Attributes$class(_p21),
 										_1: {ctor: '[]'}
 									},
 									result)),
@@ -9386,26 +9442,33 @@ var _SimplyNaOH$searchablemenu$Example$advancedMenuViewConfig = function (model)
 			},
 			prepend: _elm_lang$core$Maybe$Nothing,
 			append: _elm_lang$core$Maybe$Just(
-				A2(
-					_elm_lang$html$Html$a,
-					{
+				{
+					attributes: {ctor: '[]'},
+					children: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$href('#0'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('advanced-menu__close-button'),
-							_1: {
+						_0: A2(
+							_elm_lang$html$Html$a,
+							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_SimplyNaOH$searchablemenu$SearchableMenu$closeMsg),
+								_0: _elm_lang$html$Html_Attributes$href('#0'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('advanced-menu__close-button'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(_SimplyNaOH$searchablemenu$SearchableMenu$closeMsg),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Close'),
 								_1: {ctor: '[]'}
-							}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Close'),
+							}),
 						_1: {ctor: '[]'}
-					}))
+					}
+				})
 		});
 };
 var _SimplyNaOH$searchablemenu$Example$topicMenuViewConfig = _SimplyNaOH$searchablemenu$SearchableMenu$viewConfigWithClasses(
@@ -9422,6 +9485,46 @@ var _SimplyNaOH$searchablemenu$Example$topicMenuViewConfig = _SimplyNaOH$searcha
 		inputClass: 'topic-menu__input',
 		inputId: 'topic-menu__input',
 		inputPlaceholder: 'Search topics'
+	});
+var _SimplyNaOH$searchablemenu$Example$topicView = F2(
+	function (msg, topic) {
+		return A2(
+			_elm_lang$html$Html$li,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('topic-container__topic'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$a,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$href('#0'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								msg(topic.name)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$style(
+									{
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'color', _1: topic.color},
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(topic.name),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			});
 	});
 var _SimplyNaOH$searchablemenu$Example$Topic = F2(
 	function (a, b) {
@@ -9677,8 +9780,8 @@ var _SimplyNaOH$searchablemenu$Example$AdvancedMenuMsg = function (a) {
 var _SimplyNaOH$searchablemenu$Example$TopicMenuMsg = function (a) {
 	return {ctor: 'TopicMenuMsg', _0: a};
 };
-var _SimplyNaOH$searchablemenu$Example$ToggleOtherTopics = function (a) {
-	return {ctor: 'ToggleOtherTopics', _0: a};
+var _SimplyNaOH$searchablemenu$Example$ToggleOtherTopic = function (a) {
+	return {ctor: 'ToggleOtherTopic', _0: a};
 };
 var _SimplyNaOH$searchablemenu$Example$ToggleTopic = function (a) {
 	return {ctor: 'ToggleTopic', _0: a};
@@ -9760,7 +9863,7 @@ var _SimplyNaOH$searchablemenu$Example$update = F2(
 						{
 							topics: A2(toggle, _p6._0, model.topics)
 						}));
-			case 'ToggleOtherTopics':
+			case 'ToggleOtherTopic':
 				return noCmd(
 					_elm_lang$core$Native_Utils.update(
 						model,
@@ -9802,7 +9905,7 @@ var _SimplyNaOH$searchablemenu$Example$update = F2(
 							return _.name;
 						},
 						textboxId: 'topic-menu__input2',
-						onSelectMsg: _SimplyNaOH$searchablemenu$Example$ToggleOtherTopics
+						onSelectMsg: _SimplyNaOH$searchablemenu$Example$ToggleOtherTopic
 					});
 				var _p9 = A4(_SimplyNaOH$searchablemenu$SearchableMenu$update, config, _p6._0, model.advancedMenu, _SimplyNaOH$searchablemenu$Example$exampleTopics);
 				var updatedMenu = _p9._0;
@@ -9827,45 +9930,6 @@ var _SimplyNaOH$searchablemenu$Example$update = F2(
 				return noCmd(model);
 		}
 	});
-var _SimplyNaOH$searchablemenu$Example$topicView = function (topic) {
-	return A2(
-		_elm_lang$html$Html$li,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('topic-container__topic'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$a,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$href('#0'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							_SimplyNaOH$searchablemenu$Example$ToggleTopic(topic.name)),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$style(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'color', _1: topic.color},
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(topic.name),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
 var _SimplyNaOH$searchablemenu$Example$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -9889,7 +9953,10 @@ var _SimplyNaOH$searchablemenu$Example$view = function (model) {
 						_0: _elm_lang$html$Html_Attributes$class('topic-container'),
 						_1: {ctor: '[]'}
 					},
-					A2(_elm_lang$core$List$map, _SimplyNaOH$searchablemenu$Example$topicView, model.topics)),
+					A2(
+						_elm_lang$core$List$map,
+						_SimplyNaOH$searchablemenu$Example$topicView(_SimplyNaOH$searchablemenu$Example$ToggleTopic),
+						model.topics)),
 				_1: {
 					ctor: '::',
 					_0: _SimplyNaOH$searchablemenu$Example$openButton(_SimplyNaOH$searchablemenu$Example$TopicMenuMsg),
@@ -9918,7 +9985,10 @@ var _SimplyNaOH$searchablemenu$Example$view = function (model) {
 										_0: _elm_lang$html$Html_Attributes$class('topic-container'),
 										_1: {ctor: '[]'}
 									},
-									A2(_elm_lang$core$List$map, _SimplyNaOH$searchablemenu$Example$topicView, model.otherTopics)),
+									A2(
+										_elm_lang$core$List$map,
+										_SimplyNaOH$searchablemenu$Example$topicView(_SimplyNaOH$searchablemenu$Example$ToggleOtherTopic),
+										model.otherTopics)),
 								_1: {
 									ctor: '::',
 									_0: A2(

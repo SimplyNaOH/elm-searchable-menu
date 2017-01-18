@@ -175,8 +175,8 @@ You provide the following information in your menu configuration:
   - `ul` &mdash; the attributes of the list itself.
   - `li` &mdash; a function to provide HtmlDetails for a li node, which is provided with wether the item is selected, and the SearchResult data. We provide a helper function to deal with the SearchResult data, `simpleSpanView`.
   - `input` &mdash; the attributes of the input field.
-  - `prepend` &mdash; any Html node that will be the first inside the container div.
-  - `append` &mdash; any Html node that will be the last inside the container div.
+  - `prepend` &mdash; HtmlDetails for the very first li in the ul.
+  - `append` &mdash; HtmlDetails for the very last li in the ul..
 -}
 viewConfig :
     { toId : data -> String
@@ -184,8 +184,8 @@ viewConfig :
     , ul : List (Attribute Never)
     , li : IsSelected -> SearchResult data -> HtmlDetails Msg
     , input : List (Attribute Never)
-    , prepend : Maybe (Html Msg)
-    , append : Maybe (Html Msg)
+    , prepend : Maybe (HtmlDetails Msg)
+    , append : Maybe (HtmlDetails Msg)
     }
     -> ViewConfig data
 viewConfig config =
@@ -193,20 +193,19 @@ viewConfig config =
         unboxMsg (Msg msg) =
             msg
 
+        mapHtmlDetails { attributes, children } =
+            { attributes = List.map (Html.Attributes.map unboxMsg) attributes
+            , children = List.map (Html.map unboxMsg) children
+            }
+
         li isSelected result =
-            (\{ attributes, children } ->
-                { attributes = List.map (Html.Attributes.map unboxMsg) attributes
-                , children = List.map (Html.map unboxMsg) children
-                }
-            )
-            <|
-                config.li isSelected result
+            mapHtmlDetails <| config.li isSelected result
 
         prepend =
-            Maybe.map (Html.map unboxMsg) config.prepend
+            Maybe.map mapHtmlDetails config.prepend
 
         append =
-            Maybe.map (Html.map unboxMsg) config.append
+            Maybe.map mapHtmlDetails config.append
     in
         ViewConfig { config | li = li, prepend = prepend, append = append }
 

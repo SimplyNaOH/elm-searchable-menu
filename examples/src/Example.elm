@@ -182,12 +182,16 @@ advancedMenuViewConfig model =
         , prepend = Nothing
         , append =
             Just <|
-                a
-                    [ href "#0"
-                    , class "advanced-menu__close-button"
-                    , onClick <| SearchableMenu.closeMsg
+                { attributes = []
+                , children =
+                    [ a
+                        [ href "#0"
+                        , class "advanced-menu__close-button"
+                        , onClick <| SearchableMenu.closeMsg
+                        ]
+                        [ text "Close" ]
                     ]
-                    [ text "Close" ]
+                }
         }
 
 
