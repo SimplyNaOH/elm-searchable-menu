@@ -9883,19 +9883,20 @@ var _SimplyNaOH$searchablemenu$Example$update = F2(
 				var updatedMenu = _p7._0;
 				var menuCmd = _p7._1;
 				var maybeMsg = _p7._2;
+				var updatedModel = _elm_lang$core$Native_Utils.update(
+					model,
+					{topicMenu: updatedMenu});
 				var _p8 = maybeMsg;
 				if (_p8.ctor === 'Nothing') {
 					return {
 						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{topicMenu: updatedMenu}),
-						_1: A2(_elm_lang$core$Platform_Cmd$map, _SimplyNaOH$searchablemenu$Example$TopicMenuMsg, menuCmd)
+						_0: updatedModel,
+						_1: A2(_elm_lang$core$Platform_Cmd$map, _SimplyNaOH$searchablemenu$Example$AdvancedMenuMsg, menuCmd)
 					};
 				} else {
 					return A2(
 						attachCmd,
-						A2(_SimplyNaOH$searchablemenu$Example$update, _p8._0, model),
+						A2(_SimplyNaOH$searchablemenu$Example$update, _p8._0, updatedModel),
 						A2(_elm_lang$core$Platform_Cmd$map, _SimplyNaOH$searchablemenu$Example$TopicMenuMsg, menuCmd));
 				}
 			case 'AdvancedMenuMsg':
@@ -9911,19 +9912,20 @@ var _SimplyNaOH$searchablemenu$Example$update = F2(
 				var updatedMenu = _p9._0;
 				var menuCmd = _p9._1;
 				var maybeMsg = _p9._2;
+				var updatedModel = _elm_lang$core$Native_Utils.update(
+					model,
+					{advancedMenu: updatedMenu});
 				var _p10 = maybeMsg;
 				if (_p10.ctor === 'Nothing') {
 					return {
 						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{advancedMenu: updatedMenu}),
+						_0: updatedModel,
 						_1: A2(_elm_lang$core$Platform_Cmd$map, _SimplyNaOH$searchablemenu$Example$AdvancedMenuMsg, menuCmd)
 					};
 				} else {
 					return A2(
 						attachCmd,
-						A2(_SimplyNaOH$searchablemenu$Example$update, _p10._0, model),
+						A2(_SimplyNaOH$searchablemenu$Example$update, _p10._0, updatedModel),
 						A2(_elm_lang$core$Platform_Cmd$map, _SimplyNaOH$searchablemenu$Example$AdvancedMenuMsg, menuCmd));
 				}
 			default:
