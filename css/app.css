@@ -61,15 +61,22 @@ a {
 }
 
 .topic-menu__list {
-  -webkit-column-count: 3; /* Chrome, Safari, Opera */
-  -moz-column-count: 3; /* Firefox */
-  column-count: 3;
-  -webkit-column-gap: 3px; /* Chrome, Safari, Opera */
-  -moz-column-gap: 3px; /* Firefox */
-  column-gap: 3px;
-
+  -webkit-column-count: 1; /* Chrome, Safari, Opera */
+  -moz-column-count: 1; /* Firefox */
+  column-count: 1;
   background-color: #3362a2;
   padding: 3px;
+}
+
+@media only screen and (min-width: 768px) {
+  .topic-menu__list {
+    -webkit-column-count: 3; /* Chrome, Safari, Opera */
+    -moz-column-count: 3; /* Firefox */
+    column-count: 3;
+    -webkit-column-gap: 3px; /* Chrome, Safari, Opera */
+    -moz-column-gap: 3px; /* Firefox */
+    column-gap: 3px;
+  }
 }
 
 .topic-menu__topic {
@@ -118,19 +125,26 @@ a {
 }
 
 .advanced-menu__list {
-  -webkit-column-count: 3; /* Chrome, Safari, Opera */
-  -moz-column-count: 3; /* Firefox */
-  column-count: 3;
-  -webkit-column-gap: 3px; /* Chrome, Safari, Opera */
-  -moz-column-gap: 3px; /* Firefox */
-  column-gap: 3px;
+  -webkit-column-count: 1; /* Chrome, Safari, Opera */
+  -moz-column-count: 1; /* Firefox */
+  column-count: 1;
   background-color: #3362a2;
-  padding: 3px;
+  border-radius: 0 0 6px 6px;
+  padding: 3px 3px 0 3px;
   margin: 0px auto;
   width: 90%;
-  left: 5%;
-  transform: translateY(0);
+  transform: translateY(-2px);
   transition: all 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96) 0s;
+}
+
+@media only screen and (min-width: 768px) {
+  .advanced-menu__list {
+    -webkit-column-count: 3; /* Chrome, Safari, Opera */
+    -moz-column-count: 3; /* Firefox */
+    column-count: 3;
+    -webkit-column-gap: 3px; /* Chrome, Safari, Opera */
+    -moz-column-gap: 3px; /* Firefox */
+  }
 }
 
 .advanced-menu--closed .advanced-menu__list {
@@ -152,23 +166,16 @@ a {
 }
 
 .advanced-menu__close-button {
-  background-color: darkgrey;
+  background-color: #ff8c00;
   display: block;
-  margin: auto;
-  width: 90%;
+  margin: auto -3px;
   text-align: center;
   border-radius: 0 0 6px 6px;
 
-  transform: translateY(0);
-  transition: all 0.2s cubic-bezier(0.46, 0.03, 0.52, 0.96) 0s;
+  -webkit-column-span: all; /* Chrome, Safari, Opera */
+  column-span: all;
 }
 
 .advanced-menu__close-button:hover {
-  background-color: darkorange;
-}
-
-.advanced-menu--closed .advanced-menu__close-button {
-  transform: translateY(-600%);
-  opacity: 0;
-  visibility: hidden;
+  background-color: hsla(20, 100%, 50%, 1);
 }
