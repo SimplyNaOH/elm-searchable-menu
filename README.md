@@ -4,7 +4,7 @@ After watching watching the video [elm-autocomplete with Greg Ziegan (API Design
 
 ## Disclaimer
 
-**elm-searchable-menu** is my first component, within my first Elm project, and as of this writing it's in a very rudimentary stage. I *strongly* recommend you to check [elm-autocomplete][elm-autocomplete] before even considering using this library.
+**elm-searchable-menu** is just an experiment in creating my first component, within my first Elm project, and as of this writing it's in a very rudimentary stage. I *strongly* recommend you to check [elm-autocomplete][elm-autocomplete] for all your menus needs.
 
 ## Demo
 
