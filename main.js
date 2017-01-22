@@ -8270,6 +8270,25 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_OnKeyDown$keyCode = _elm_lang$core
 			_1: {ctor: '[]'}
 		}
 	});
+var _SimplyNaOH$searchablemenu$SearchableMenu_OnKeyDown$onlyKeyCodes = function (keyCodes) {
+	return A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (keyCode) {
+			return A2(_elm_lang$core$List$member, keyCode, keyCodes) ? _elm_lang$core$Json_Decode$succeed(keyCode) : _elm_lang$core$Json_Decode$fail('KeyCode not handled');
+		},
+		_SimplyNaOH$searchablemenu$SearchableMenu_OnKeyDown$keyCode);
+};
+var _SimplyNaOH$searchablemenu$SearchableMenu_OnKeyDown$onKeyDowns = F2(
+	function (keyCodes, tagger) {
+		return A3(
+			_elm_lang$html$Html_Events$onWithOptions,
+			'keydown',
+			{stopPropagation: true, preventDefault: true},
+			A2(
+				_elm_lang$core$Json_Decode$map,
+				tagger,
+				_SimplyNaOH$searchablemenu$SearchableMenu_OnKeyDown$onlyKeyCodes(keyCodes)));
+	});
 var _SimplyNaOH$searchablemenu$SearchableMenu_OnKeyDown$onKeyDown = function (tagger) {
 	return A2(
 		_elm_lang$html$Html_Events$on,
@@ -9111,7 +9130,30 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$view = F3(
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html_Keyed$ul,
-						A2(_elm_lang$core$List$map, _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$mapNeverToMsg, config.ul),
+						{
+							ctor: '::',
+							_0: A2(
+								_SimplyNaOH$searchablemenu$SearchableMenu_OnKeyDown$onKeyDowns,
+								{
+									ctor: '::',
+									_0: 38,
+									_1: {
+										ctor: '::',
+										_0: 40,
+										_1: {
+											ctor: '::',
+											_0: 13,
+											_1: {
+												ctor: '::',
+												_0: 27,
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								},
+								_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$KeyDown),
+							_1: A2(_elm_lang$core$List$map, _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$mapNeverToMsg, config.ul)
+						},
 						list),
 					_1: {ctor: '[]'}
 				}
