@@ -17,7 +17,7 @@ import Html exposing (Html, Attribute, div, input, li, text, span, a)
 import Html.Keyed exposing (ul)
 import Html.Attributes exposing (id, class, placeholder, value)
 import Html.Events exposing (onInput, onBlur, onFocus, onMouseLeave, onMouseEnter, onClick)
-import SearchableMenu.OnKeyDown exposing (onKeyDown)
+import SearchableMenu.OnKeyDown exposing (onKeyDown, onKeyDowns)
 
 
 -- Other things
@@ -248,7 +248,7 @@ view config model data =
     in
         div (mouseOnDivAttributes ++ customDivAttributes)
             [ textbox config model.searchString
-            , ul (List.map mapNeverToMsg config.ul) list
+            , ul (onKeyDowns [ 38, 40, 13, 27 ] KeyDown :: List.map mapNeverToMsg config.ul) list
             ]
 
 
