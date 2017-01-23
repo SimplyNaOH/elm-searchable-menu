@@ -1,4 +1,4 @@
-module SearchableMenu.OnKeyDown exposing (onKeyDown, onKeyDowns)
+module OnKeyDown exposing (onKeyDown, onKeyDowns)
 
 import Html.Events exposing (on, onWithOptions)
 import Json.Decode exposing (Decoder, oneOf, field, int, map, andThen, succeed, fail)

@@ -2,19 +2,14 @@ module SearchableMenu
     exposing
         ( view
         , update
+        , initialModel
         , Model
-        , Msg
-        , openMsg
-        , closeMsg
-        , selectMsg
+        , Msg(..)
         , UpdateConfig
         , ViewConfig
         , HtmlDetails
         , SearchResult
         , MatchedString
-        , viewConfig
-        , updateConfig
-        , initialModel
         , simpleSpanView
         , viewConfigWithClasses
         )
@@ -34,106 +29,249 @@ module SearchableMenu
 @docs update
 
 # Configuration
-@docs viewConfig, updateConfig
+@docs ViewConfig, UpdateConfig
 
 # Model
 @docs Model, initialModel
 
 # Definitions
-@docs Msg, openMsg, closeMsg, selectMsg, UpdateConfig, ViewConfig, HtmlDetails, MatchedString, SearchResult
+@docs Msg, HtmlDetails, MatchedString, SearchResult
 
 # Helper Functions
 @docs simpleSpanView, viewConfigWithClasses
 
 -}
 
-import SearchableMenu.SearchableMenu as Internal
-import SearchableMenu.Search as Search
-import Html exposing (Html, Attribute, a)
-import Html.Attributes exposing (class, href, id, placeholder)
-import Html.Events exposing (onClick, onBlur)
+-- Html stuff
+
+import Html exposing (Html, Attribute, div, input, li, text, span, a)
+import Html.Keyed exposing (ul)
+import Html.Attributes exposing (id, class, placeholder, value, href)
+import Html.Events exposing (onInput, onBlur, onFocus, onMouseLeave, onMouseEnter, onClick)
+import OnKeyDown exposing (onKeyDown, onKeyDowns)
+
+
+-- Other things
+
+import Task
+import Dom exposing (blur)
+import Search as Search
+import Search exposing (SearchResult, search)
+
+
+-- Model
 
 
 {-| Tracks the input field and the state of the menu (is it open? is the mouse over it? is there something selected?)
 -}
-type Model
-    = Model Internal.Model
+type alias Model =
+    { searchString : String
+    , mouseIsOver : Bool
+    , menuIsOpen : Bool
+    , selected : Maybe Int
+    }
 
 
 {-| A closed menu with no text in the input and nothing selected.
 -}
 initialModel : Model
 initialModel =
-    Model Internal.initialModel
+    Model "" False False Nothing
+
+
+
+-- Update
+
+
+type alias KeyCode =
+    Int
 
 
 {-| A message type for the menu to update.
 -}
 type Msg
-    = Msg Internal.Msg
-
-
-{-| A message to open the menu.
--}
-openMsg : Msg
-openMsg =
-    Msg Internal.Open
-
-
-{-| A message to close the menu.
--}
-closeMsg : Msg
-closeMsg =
-    Msg Internal.Close
-
-
-{-| A message to select an entry.
--}
-selectMsg : String -> Msg
-selectMsg =
-    Msg << Internal.Select
+    = Search String
+    | Open
+    | Close
+    | SetMouseOver Bool
+    | LostFocus
+    | KeyDown KeyCode
+    | Select String
+    | NoOp
 
 
 {-| Configuration for updates
--}
-type UpdateConfig msg data
-    = UpdateConfig (Internal.UpdateConfig msg data)
-
-
-{-| Use this function to update the model.
-Provide the same data as your view.
--}
-update : UpdateConfig msg data -> Msg -> Model -> List data -> ( Model, Cmd Msg, Maybe msg )
-update (UpdateConfig config) (Msg msg) (Model model) data =
-    let
-        ( newModel, menuCommands, maybeMsg ) =
-            Internal.update config msg model data
-    in
-        ( Model newModel, Cmd.map Msg menuCommands, maybeMsg )
-
-
-{-| Create the configuration for your `update` function (`UpdateConfig`).
 You provide the following information in your menu configuration:
   - `toId` &mdash; convert the data to a unique ID.
   - `textboxId` &mdash; The id attribute of the input textbox. **MUST CORRESPOND TO AN ID PROVIDED IN THE VIEW CONFIG**
   - `onSelectMsg` &mdash; The message to produce when an option is selected. It must accept and ID (String).
 -}
-updateConfig :
-    { toId : data -> String
+type alias UpdateConfig msg a =
+    { toId : a -> String
     , textboxId : String
     , onSelectMsg : String -> msg
     }
-    -> UpdateConfig msg data
-updateConfig config =
-    UpdateConfig config
+
+
+{-| Use this function to update the model.
+Provide the same data as your view.
+-}
+update : UpdateConfig msg a -> Msg -> Model -> List a -> ( Model, Cmd Msg, Maybe msg )
+update config msg model data =
+    let
+        noCmdMsg model =
+            ( model, Cmd.none, Nothing )
+    in
+        case msg of
+            Search str ->
+                noCmdMsg
+                    { model
+                        | searchString = str
+                        , selected =
+                            if String.isEmpty str then
+                                Nothing
+                            else
+                                Just 0
+                    }
+
+            Open ->
+                ( { model | menuIsOpen = True }
+                , Task.attempt (always NoOp) (Dom.focus config.textboxId)
+                , Nothing
+                )
+
+            Close ->
+                noCmdMsg { model | searchString = "", selected = Nothing, menuIsOpen = False }
+
+            SetMouseOver isOver ->
+                noCmdMsg { model | mouseIsOver = isOver }
+
+            LostFocus ->
+                if model.mouseIsOver then
+                    noCmdMsg { model | selected = Nothing }
+                    -- right now we can't handle keydown events outside the input, so we don't want a selection
+                else
+                    noCmdMsg initialModel
+
+            KeyDown keyCode ->
+                let
+                    maxSelect =
+                        List.length (search model.searchString config.toId data) - 1
+
+                    selectNext =
+                        Maybe.withDefault 0 <|
+                            Maybe.map (min maxSelect << (+) 1) model.selected
+
+                    selectPrev =
+                        Maybe.withDefault maxSelect <|
+                            Maybe.map (max 0 << flip (-) 1) model.selected
+
+                    at list index =
+                        List.head << List.drop index <| list
+
+                    searchResults =
+                        search model.searchString config.toId data
+
+                    selectedId =
+                        Maybe.andThen
+                            (Maybe.map (config.toId << Tuple.second) << at searchResults)
+                            model.selected
+                in
+                    case keyCode of
+                        38 ->
+                            -- up arrow
+                            noCmdMsg { model | selected = Just selectPrev }
+
+                        40 ->
+                            -- down arrow
+                            noCmdMsg { model | selected = Just selectNext }
+
+                        13 ->
+                            -- enter
+                            Maybe.withDefault (noCmdMsg model) <|
+                                Maybe.map (\id -> update config (Select id) model data) selectedId
+
+                        27 ->
+                            -- esc
+                            ( initialModel
+                            , Task.attempt (always NoOp) (Dom.blur config.textboxId)
+                            , Nothing
+                            )
+
+                        _ ->
+                            noCmdMsg model
+
+            Select id ->
+                ( { model | searchString = "", selected = Nothing }
+                , Cmd.none
+                , Just <| config.onSelectMsg id
+                )
+
+            NoOp ->
+                noCmdMsg model
+
+
+
+-- View
+
+
+type alias IsSelected =
+    Bool
+
+
+type alias IsOpen =
+    Bool
+
+
+{-|
+HTML lists require `li` tags as children, so we allow you to specify everything about `li` HTML node except the nodeType.
+Copied from [elm-autocomplete](https://github.com/thebritican/elm-autocomplete).
+-}
+type alias HtmlDetails msg =
+    { attributes : List (Attribute msg)
+    , children : List (Html msg)
+    }
 
 
 {-|
 Configuration for your menu view.
 **Note:** Your `ViewConfig` should never be held in your model. It should only appear in view code.
+You provide the following information in your menu configuration:
+  - `toId` &mdash; convert the data to a unique ID.
+  - `div` &mdash; a function that provides a list of `Html.Attribute Never` based on whether the menu isOpen.
+  - `ul` &mdash; the attributes of the list itself.
+  - `li` &mdash; a function to provide HtmlDetails for a li node, which is provided with wether the item is selected, and the SearchResult data. We provide a helper function to deal with the SearchResult data, `simpleSpanView`.
+  - `input` &mdash; the attributes of the input field.
+  - `prepend` &mdash; HtmlDetails for the very first li in the ul.
+  - `append` &mdash; HtmlDetails for the very last li in the ul..
 -}
-type ViewConfig data
-    = ViewConfig (Internal.ViewConfig data)
+type alias ViewConfig a =
+    { toId : a -> String
+    , div : IsOpen -> List (Attribute Never)
+    , ul : List (Attribute Never)
+    , li : IsSelected -> SearchResult a -> HtmlDetails Msg
+    , input : List (Attribute Never)
+    , prepend : Maybe (HtmlDetails Msg)
+    , append : Maybe (HtmlDetails Msg)
+    }
+
+
+textbox : ViewConfig a -> String -> Html Msg
+textbox config text =
+    let
+        eventAttributes =
+            [ onInput Search
+            , onBlur LostFocus
+            , onFocus Open
+            , onKeyDown KeyDown
+            , value text
+            ]
+
+        customAttributes =
+            List.map mapNeverToMsg config.input
+    in
+        input (eventAttributes ++ customAttributes)
+            []
 
 
 {-|
@@ -147,67 +285,45 @@ Describe any potential menu configurations statically.
 This pattern has been inspired by [Elm Sortable Table](http://package.elm-lang.org/packages/evancz/elm-sortable-table/latest).
 The above statements have been copied from [elm-autocomplete](https://github.com/thebritican/elm-autocomplete).
 -}
-view : ViewConfig data -> Model -> List data -> Html Msg
-view (ViewConfig config) (Model model) data =
-    Html.map Msg <| Internal.view config model data
-
-
-{-|
-HTML lists require `li` tags as children, so we allow you to specify everything about `li` HTML node except the nodeType.
-Copied from [elm-autocomplete](https://github.com/thebritican/elm-autocomplete).
--}
-type alias HtmlDetails msg =
-    Internal.HtmlDetails msg
-
-
-type alias IsOpen =
-    Bool
-
-
-type alias IsSelected =
-    Bool
-
-
-{-| Create the configuration for your `view` function (`ViewConfig`).
-You provide the following information in your menu configuration:
-  - `toId` &mdash; convert the data to a unique ID.
-  - `div` &mdash; a function that provides a list of `Html.Attribute Never` based on whether the menu isOpen.
-  - `ul` &mdash; the attributes of the list itself.
-  - `li` &mdash; a function to provide HtmlDetails for a li node, which is provided with wether the item is selected, and the SearchResult data. We provide a helper function to deal with the SearchResult data, `simpleSpanView`.
-  - `input` &mdash; the attributes of the input field.
-  - `prepend` &mdash; HtmlDetails for the very first li in the ul.
-  - `append` &mdash; HtmlDetails for the very last li in the ul..
--}
-viewConfig :
-    { toId : data -> String
-    , div : IsOpen -> List (Attribute Never)
-    , ul : List (Attribute Never)
-    , li : IsSelected -> SearchResult data -> HtmlDetails Msg
-    , input : List (Attribute Never)
-    , prepend : Maybe (HtmlDetails Msg)
-    , append : Maybe (HtmlDetails Msg)
-    }
-    -> ViewConfig data
-viewConfig config =
+view : ViewConfig a -> Model -> List a -> Html Msg
+view config model data =
     let
-        unboxMsg (Msg msg) =
-            msg
+        mouseOnDivAttributes =
+            [ onMouseEnter <| SetMouseOver True
+            , onMouseLeave <| SetMouseOver False
+            ]
 
-        mapHtmlDetails { attributes, children } =
-            { attributes = List.map (Html.Attributes.map unboxMsg) attributes
-            , children = List.map (Html.map unboxMsg) children
-            }
+        customDivAttributes =
+            List.map mapNeverToMsg <| config.div model.menuIsOpen
 
-        li isSelected result =
-            mapHtmlDetails <| config.li isSelected result
+        toLi htmlDetails =
+            li htmlDetails.attributes
+                htmlDetails.children
 
-        prepend =
-            Maybe.map mapHtmlDetails config.prepend
+        isSelected i =
+            Maybe.withDefault False <| Maybe.map ((==) i) model.selected
 
-        append =
-            Maybe.map mapHtmlDetails config.append
+        viewAndId i item =
+            ( config.toId (Tuple.second item), toLi <| config.li (isSelected i) item )
+
+        dataList =
+            List.indexedMap viewAndId <| search model.searchString config.toId data
+
+        appendix =
+            Maybe.withDefault [] (Maybe.map (\x -> [ ( "appendix", toLi x ) ]) config.append)
+
+        list =
+            case config.prepend of
+                Nothing ->
+                    dataList ++ appendix
+
+                Just prepend ->
+                    ( "prepend", toLi prepend ) :: dataList ++ appendix
     in
-        ViewConfig { config | li = li, prepend = prepend, append = append }
+        div (mouseOnDivAttributes ++ customDivAttributes)
+            [ textbox config model.searchString
+            , ul (onKeyDowns [ 38, 40, 13, 27 ] KeyDown :: List.map mapNeverToMsg config.ul) list
+            ]
 
 
 {-|
@@ -228,12 +344,16 @@ type alias MatchedString =
 -- Helper Functions
 
 
+mapNeverToMsg attr =
+    Html.Attributes.map (always NoOp) attr
+
+
 {-| Given a `SearchResult`, it takes the `MatchedString` and for each unmatched substring, it creates an `Html.text` node,
 and for the matched substrings, it creates a `Html.span` node with the given `Attribute`s.
 -}
-simpleSpanView : List (Html.Attribute Never) -> SearchResult data -> List (Html Msg)
-simpleSpanView attributes result =
-    List.map (Html.map Msg) <| Internal.simpleSpanView attributes result
+simpleSpanView : List (Html.Attribute Never) -> SearchResult a -> List (Html Msg)
+simpleSpanView attrs res =
+    List.map (Html.map (always NoOp)) <| Search.simpleSpanView attrs res
 
 
 {-|
@@ -265,33 +385,32 @@ viewConfigWithClasses { toId, openClass, closedClass, ulClass, liClass, selected
             , children =
                 [ a
                     [ href "#0"
-                    , onClick <| Msg <| Internal.Select (toId << Tuple.second <| result)
-                    , onBlur <| Msg Internal.LostFocus
+                    , onClick <| Select (toId << Tuple.second <| result)
+                    , onBlur <| LostFocus
                     ]
                     (simpleSpanView [ class matchedSpanClass ] result)
                 ]
             }
     in
-        viewConfig
-            { toId = toId
-            , div =
-                \isOpen ->
-                    if isOpen then
-                        [ class openClass ]
-                    else
-                        [ class closedClass ]
-            , ul = [ class ulClass ]
-            , li =
-                (\isSelected result ->
-                    Internal.HtmlDetails
-                        [ if isSelected then
-                            class selectedClass
-                          else
-                            class liClass
-                        ]
-                        [ a [ href "#0", onClick <| Msg <| Internal.Select (toId << Tuple.second <| result), onBlur <| Msg Internal.LostFocus ] (simpleSpanView [ class matchedSpanClass ] result) ]
-                )
-            , input = [ class inputClass, id inputId, placeholder inputPlaceholder ]
-            , prepend = Nothing
-            , append = Nothing
-            }
+        { toId = toId
+        , div =
+            \isOpen ->
+                if isOpen then
+                    [ class openClass ]
+                else
+                    [ class closedClass ]
+        , ul = [ class ulClass ]
+        , li =
+            (\isSelected result ->
+                HtmlDetails
+                    [ if isSelected then
+                        class selectedClass
+                      else
+                        class liClass
+                    ]
+                    [ a [ href "#0", onClick <| Select (toId << Tuple.second <| result), onBlur LostFocus ] (simpleSpanView [ class matchedSpanClass ] result) ]
+            )
+        , input = [ class inputClass, id inputId, placeholder inputPlaceholder ]
+        , prepend = Nothing
+        , append = Nothing
+        }

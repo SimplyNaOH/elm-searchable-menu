@@ -1,4 +1,4 @@
-module SearchableMenu.Search exposing (SearchResult, MatchedString, search, simpleSpanView)
+module Search exposing (SearchResult, MatchedString, search, simpleSpanView)
 
 import Html exposing (Html, text, span)
 
