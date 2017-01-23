@@ -64,11 +64,10 @@ update msg model =
             TopicMenuMsg msg ->
                 let
                     config =
-                        SearchableMenu.updateConfig
-                            { toId = .name
-                            , textboxId = "topic-menu__input"
-                            , onSelectMsg = ToggleTopic
-                            }
+                        { toId = .name
+                        , textboxId = "topic-menu__input"
+                        , onSelectMsg = ToggleTopic
+                        }
 
                     ( updatedMenu, menuCmd, maybeMsg ) =
                         SearchableMenu.update config msg model.topicMenu exampleTopics
@@ -86,11 +85,10 @@ update msg model =
             AdvancedMenuMsg msg ->
                 let
                     config =
-                        SearchableMenu.updateConfig
-                            { toId = .name
-                            , textboxId = "topic-menu__input2"
-                            , onSelectMsg = ToggleOtherTopic
-                            }
+                        { toId = .name
+                        , textboxId = "topic-menu__input2"
+                        , onSelectMsg = ToggleOtherTopic
+                        }
 
                     ( updatedMenu, menuCmd, maybeMsg ) =
                         SearchableMenu.update config msg model.advancedMenu exampleTopics
@@ -161,51 +159,50 @@ advancedMenuTopicView model isSelected result =
                     "topic-menu__topic"
             ]
         , children =
-            [ a [ href "#0", onClick <| SearchableMenu.selectMsg topic.name, aStyle ]
+            [ a [ href "#0", onClick <| SearchableMenu.Select topic.name, aStyle ]
                 (SearchableMenu.simpleSpanView [ class "topic-menu__matched-string" ] result)
             ]
         }
 
 
 advancedMenuViewConfig model =
-    SearchableMenu.viewConfig
-        { toId = .name
-        , div =
-            \isOpen ->
-                [ class <|
-                    if isOpen then
-                        "advanced-menu"
-                    else
-                        "advanced-menu advanced-menu--closed"
-                ]
-        , ul = [ class "advanced-menu__list" ]
-        , li = advancedMenuTopicView model
-        , input =
-            [ id "topic-menu__input2"
-            , class "advanced-menu__input"
-            , placeholder "Add a topic"
+    { toId = .name
+    , div =
+        \isOpen ->
+            [ class <|
+                if isOpen then
+                    "advanced-menu"
+                else
+                    "advanced-menu advanced-menu--closed"
             ]
-        , prepend = Nothing
-        , append =
-            Just <|
-                { attributes = []
-                , children =
-                    [ a
-                        [ href "#0"
-                        , class "advanced-menu__close-button"
-                        , onClick <| SearchableMenu.closeMsg
-                        ]
-                        [ text "Close" ]
+    , ul = [ class "advanced-menu__list" ]
+    , li = advancedMenuTopicView model
+    , input =
+        [ id "topic-menu__input2"
+        , class "advanced-menu__input"
+        , placeholder "Add a topic"
+        ]
+    , prepend = Nothing
+    , append =
+        Just <|
+            { attributes = []
+            , children =
+                [ a
+                    [ href "#0"
+                    , class "advanced-menu__close-button"
+                    , onClick <| SearchableMenu.Close
                     ]
-                }
-        }
+                    [ text "Close" ]
+                ]
+            }
+    }
 
 
 openButton menuMsg =
     a
         [ href "#0"
         , class "topic-container__open-button"
-        , onClick <| menuMsg SearchableMenu.openMsg
+        , onClick <| menuMsg SearchableMenu.Open
         ]
         [ text "Add a topic" ]
 

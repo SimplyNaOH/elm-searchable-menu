@@ -8260,7 +8260,7 @@ var _elm_lang$html$Html_Keyed$node = _elm_lang$virtual_dom$VirtualDom$keyedNode;
 var _elm_lang$html$Html_Keyed$ol = _elm_lang$html$Html_Keyed$node('ol');
 var _elm_lang$html$Html_Keyed$ul = _elm_lang$html$Html_Keyed$node('ul');
 
-var _SimplyNaOH$searchablemenu$SearchableMenu_OnKeyDown$keyCode = _elm_lang$core$Json_Decode$oneOf(
+var _SimplyNaOH$searchablemenu$OnKeyDown$keyCode = _elm_lang$core$Json_Decode$oneOf(
 	{
 		ctor: '::',
 		_0: A2(_elm_lang$core$Json_Decode$field, 'which', _elm_lang$core$Json_Decode$int),
@@ -8270,11 +8270,30 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_OnKeyDown$keyCode = _elm_lang$core
 			_1: {ctor: '[]'}
 		}
 	});
-var _SimplyNaOH$searchablemenu$SearchableMenu_OnKeyDown$onKeyDown = function (tagger) {
+var _SimplyNaOH$searchablemenu$OnKeyDown$onlyKeyCodes = function (keyCodes) {
+	return A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (keyCode) {
+			return A2(_elm_lang$core$List$member, keyCode, keyCodes) ? _elm_lang$core$Json_Decode$succeed(keyCode) : _elm_lang$core$Json_Decode$fail('KeyCode not handled');
+		},
+		_SimplyNaOH$searchablemenu$OnKeyDown$keyCode);
+};
+var _SimplyNaOH$searchablemenu$OnKeyDown$onKeyDowns = F2(
+	function (keyCodes, tagger) {
+		return A3(
+			_elm_lang$html$Html_Events$onWithOptions,
+			'keydown',
+			{stopPropagation: true, preventDefault: true},
+			A2(
+				_elm_lang$core$Json_Decode$map,
+				tagger,
+				_SimplyNaOH$searchablemenu$OnKeyDown$onlyKeyCodes(keyCodes)));
+	});
+var _SimplyNaOH$searchablemenu$OnKeyDown$onKeyDown = function (tagger) {
 	return A2(
 		_elm_lang$html$Html_Events$on,
 		'keydown',
-		A2(_elm_lang$core$Json_Decode$map, tagger, _SimplyNaOH$searchablemenu$SearchableMenu_OnKeyDown$keyCode));
+		A2(_elm_lang$core$Json_Decode$map, tagger, _SimplyNaOH$searchablemenu$OnKeyDown$keyCode));
 };
 
 var _elm_lang$core$Task$onError = _elm_lang$core$Native_Scheduler.onError;
@@ -8663,7 +8682,7 @@ var _elm_lang$dom$Dom$NotFound = function (a) {
 	return {ctor: 'NotFound', _0: a};
 };
 
-var _SimplyNaOH$searchablemenu$SearchableMenu_Search$simpleSpanView = F2(
+var _SimplyNaOH$searchablemenu$Search$simpleSpanView = F2(
 	function (spanAttributes, _p0) {
 		var _p1 = _p0;
 		var matchedView = function (_p2) {
@@ -8680,7 +8699,7 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_Search$simpleSpanView = F2(
 		};
 		return A2(_elm_lang$core$List$map, matchedView, _p1._0);
 	});
-var _SimplyNaOH$searchablemenu$SearchableMenu_Search$decomposeMatch = F2(
+var _SimplyNaOH$searchablemenu$Search$decomposeMatch = F2(
 	function (str, source) {
 		var indices = A2(
 			_elm_lang$core$String$indices,
@@ -8729,7 +8748,7 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_Search$decomposeMatch = F2(
 			};
 		}
 	});
-var _SimplyNaOH$searchablemenu$SearchableMenu_Search$search = F3(
+var _SimplyNaOH$searchablemenu$Search$search = F3(
 	function (str, f, elems) {
 		var readyToMatch = A2(
 			_elm_lang$core$List$map,
@@ -8775,49 +8794,49 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_Search$search = F3(
 				var _p10 = _p9;
 				return {
 					ctor: '_Tuple2',
-					_0: A2(_SimplyNaOH$searchablemenu$SearchableMenu_Search$decomposeMatch, str, _p10._0),
+					_0: A2(_SimplyNaOH$searchablemenu$Search$decomposeMatch, str, _p10._0),
 					_1: _p10._1
 				};
 			},
 			matches);
 	});
 
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Model = F4(
+var _SimplyNaOH$searchablemenu$SearchableMenu$Model = F4(
 	function (a, b, c, d) {
 		return {searchString: a, mouseIsOver: b, menuIsOpen: c, selected: d};
 	});
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$initialModel = A4(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Model, '', false, false, _elm_lang$core$Maybe$Nothing);
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$UpdateConfig = F3(
+var _SimplyNaOH$searchablemenu$SearchableMenu$initialModel = A4(_SimplyNaOH$searchablemenu$SearchableMenu$Model, '', false, false, _elm_lang$core$Maybe$Nothing);
+var _SimplyNaOH$searchablemenu$SearchableMenu$UpdateConfig = F3(
 	function (a, b, c) {
 		return {toId: a, textboxId: b, onSelectMsg: c};
 	});
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$HtmlDetails = F2(
+var _SimplyNaOH$searchablemenu$SearchableMenu$HtmlDetails = F2(
 	function (a, b) {
 		return {attributes: a, children: b};
 	});
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$ViewConfig = F7(
+var _SimplyNaOH$searchablemenu$SearchableMenu$ViewConfig = F7(
 	function (a, b, c, d, e, f, g) {
 		return {toId: a, div: b, ul: c, li: d, input: e, prepend: f, append: g};
 	});
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$NoOp = {ctor: 'NoOp'};
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$simpleSpanView = F2(
+var _SimplyNaOH$searchablemenu$SearchableMenu$NoOp = {ctor: 'NoOp'};
+var _SimplyNaOH$searchablemenu$SearchableMenu$mapNeverToMsg = function (attr) {
+	return A2(
+		_elm_lang$html$Html_Attributes$map,
+		_elm_lang$core$Basics$always(_SimplyNaOH$searchablemenu$SearchableMenu$NoOp),
+		attr);
+};
+var _SimplyNaOH$searchablemenu$SearchableMenu$simpleSpanView = F2(
 	function (attrs, res) {
 		return A2(
 			_elm_lang$core$List$map,
 			_elm_lang$html$Html$map(
-				_elm_lang$core$Basics$always(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$NoOp)),
-			A2(_SimplyNaOH$searchablemenu$SearchableMenu_Search$simpleSpanView, attrs, res));
+				_elm_lang$core$Basics$always(_SimplyNaOH$searchablemenu$SearchableMenu$NoOp)),
+			A2(_SimplyNaOH$searchablemenu$Search$simpleSpanView, attrs, res));
 	});
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$mapNeverToMsg = function (attr) {
-	return A2(
-		_elm_lang$html$Html_Attributes$map,
-		_elm_lang$core$Basics$always(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$NoOp),
-		attr);
-};
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Select = function (a) {
+var _SimplyNaOH$searchablemenu$SearchableMenu$Select = function (a) {
 	return {ctor: 'Select', _0: a};
 };
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$update = F4(
+var _SimplyNaOH$searchablemenu$SearchableMenu$update = F4(
 	function (config, msg, model, data) {
 		var noCmdMsg = function (model) {
 			return {ctor: '_Tuple3', _0: model, _1: _elm_lang$core$Platform_Cmd$none, _2: _elm_lang$core$Maybe$Nothing};
@@ -8841,7 +8860,7 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$update = F4(
 						{menuIsOpen: true}),
 					_1: A2(
 						_elm_lang$core$Task$attempt,
-						_elm_lang$core$Basics$always(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$NoOp),
+						_elm_lang$core$Basics$always(_SimplyNaOH$searchablemenu$SearchableMenu$NoOp),
 						_elm_lang$dom$Dom$focus(config.textboxId)),
 					_2: _elm_lang$core$Maybe$Nothing
 				};
@@ -8859,9 +8878,9 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$update = F4(
 				return model.mouseIsOver ? noCmdMsg(
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{selected: _elm_lang$core$Maybe$Nothing})) : noCmdMsg(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$initialModel);
+						{selected: _elm_lang$core$Maybe$Nothing})) : noCmdMsg(_SimplyNaOH$searchablemenu$SearchableMenu$initialModel);
 			case 'KeyDown':
-				var searchResults = A3(_SimplyNaOH$searchablemenu$SearchableMenu_Search$search, model.searchString, config.toId, data);
+				var searchResults = A3(_SimplyNaOH$searchablemenu$Search$search, model.searchString, config.toId, data);
 				var at = F2(
 					function (list, index) {
 						return function (_p2) {
@@ -8882,7 +8901,7 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$update = F4(
 					},
 					model.selected);
 				var maxSelect = _elm_lang$core$List$length(
-					A3(_SimplyNaOH$searchablemenu$SearchableMenu_Search$search, model.searchString, config.toId, data)) - 1;
+					A3(_SimplyNaOH$searchablemenu$Search$search, model.searchString, config.toId, data)) - 1;
 				var selectNext = A2(
 					_elm_lang$core$Maybe$withDefault,
 					0,
@@ -8944,9 +8963,9 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$update = F4(
 								_elm_lang$core$Maybe$map,
 								function (id) {
 									return A4(
-										_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$update,
+										_SimplyNaOH$searchablemenu$SearchableMenu$update,
 										config,
-										_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Select(id),
+										_SimplyNaOH$searchablemenu$SearchableMenu$Select(id),
 										model,
 										data);
 								},
@@ -8954,10 +8973,10 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$update = F4(
 					case 27:
 						return {
 							ctor: '_Tuple3',
-							_0: _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$initialModel,
+							_0: _SimplyNaOH$searchablemenu$SearchableMenu$initialModel,
 							_1: A2(
 								_elm_lang$core$Task$attempt,
-								_elm_lang$core$Basics$always(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$NoOp),
+								_elm_lang$core$Basics$always(_SimplyNaOH$searchablemenu$SearchableMenu$NoOp),
 								_elm_lang$dom$Dom$blur(config.textboxId)),
 							_2: _elm_lang$core$Maybe$Nothing
 						};
@@ -8978,33 +8997,158 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$update = F4(
 				return noCmdMsg(model);
 		}
 	});
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$KeyDown = function (a) {
+var _SimplyNaOH$searchablemenu$SearchableMenu$KeyDown = function (a) {
 	return {ctor: 'KeyDown', _0: a};
 };
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$LostFocus = {ctor: 'LostFocus'};
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$SetMouseOver = function (a) {
-	return {ctor: 'SetMouseOver', _0: a};
-};
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Close = {ctor: 'Close'};
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Open = {ctor: 'Open'};
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Search = function (a) {
-	return {ctor: 'Search', _0: a};
-};
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$textbox = F2(
-	function (config, text) {
-		var customAttributes = A2(_elm_lang$core$List$map, _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$mapNeverToMsg, config.input);
-		var eventAttributes = {
+var _SimplyNaOH$searchablemenu$SearchableMenu$LostFocus = {ctor: 'LostFocus'};
+var _SimplyNaOH$searchablemenu$SearchableMenu$viewConfigWithClasses = function (_p8) {
+	var _p9 = _p8;
+	var _p15 = _p9.toId;
+	var _p14 = _p9.selectedClass;
+	var _p13 = _p9.matchedSpanClass;
+	var _p12 = _p9.liClass;
+	var simpleLiView = F2(
+		function (isSelected, result) {
+			return {
+				attributes: {
+					ctor: '::',
+					_0: isSelected ? _elm_lang$html$Html_Attributes$class(_p14) : _elm_lang$html$Html_Attributes$class(_p12),
+					_1: {ctor: '[]'}
+				},
+				children: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$a,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$href('#0'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									_SimplyNaOH$searchablemenu$SearchableMenu$Select(
+										function (_p10) {
+											return _p15(
+												_elm_lang$core$Tuple$second(_p10));
+										}(result))),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onBlur(_SimplyNaOH$searchablemenu$SearchableMenu$LostFocus),
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						A2(
+							_SimplyNaOH$searchablemenu$SearchableMenu$simpleSpanView,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class(_p13),
+								_1: {ctor: '[]'}
+							},
+							result)),
+					_1: {ctor: '[]'}
+				}
+			};
+		});
+	return {
+		toId: _p15,
+		div: function (isOpen) {
+			return isOpen ? {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class(_p9.openClass),
+				_1: {ctor: '[]'}
+			} : {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class(_p9.closedClass),
+				_1: {ctor: '[]'}
+			};
+		},
+		ul: {
 			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onInput(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Search),
+			_0: _elm_lang$html$Html_Attributes$class(_p9.ulClass),
+			_1: {ctor: '[]'}
+		},
+		li: F2(
+			function (isSelected, result) {
+				return A2(
+					_SimplyNaOH$searchablemenu$SearchableMenu$HtmlDetails,
+					{
+						ctor: '::',
+						_0: isSelected ? _elm_lang$html$Html_Attributes$class(_p14) : _elm_lang$html$Html_Attributes$class(_p12),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$a,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$href('#0'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(
+										_SimplyNaOH$searchablemenu$SearchableMenu$Select(
+											function (_p11) {
+												return _p15(
+													_elm_lang$core$Tuple$second(_p11));
+											}(result))),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onBlur(_SimplyNaOH$searchablemenu$SearchableMenu$LostFocus),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							A2(
+								_SimplyNaOH$searchablemenu$SearchableMenu$simpleSpanView,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class(_p13),
+									_1: {ctor: '[]'}
+								},
+								result)),
+						_1: {ctor: '[]'}
+					});
+			}),
+		input: {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class(_p9.inputClass),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onBlur(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$LostFocus),
+				_0: _elm_lang$html$Html_Attributes$id(_p9.inputId),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onFocus(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Open),
+					_0: _elm_lang$html$Html_Attributes$placeholder(_p9.inputPlaceholder),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		prepend: _elm_lang$core$Maybe$Nothing,
+		append: _elm_lang$core$Maybe$Nothing
+	};
+};
+var _SimplyNaOH$searchablemenu$SearchableMenu$SetMouseOver = function (a) {
+	return {ctor: 'SetMouseOver', _0: a};
+};
+var _SimplyNaOH$searchablemenu$SearchableMenu$Close = {ctor: 'Close'};
+var _SimplyNaOH$searchablemenu$SearchableMenu$Open = {ctor: 'Open'};
+var _SimplyNaOH$searchablemenu$SearchableMenu$Search = function (a) {
+	return {ctor: 'Search', _0: a};
+};
+var _SimplyNaOH$searchablemenu$SearchableMenu$textbox = F2(
+	function (config, text) {
+		var customAttributes = A2(_elm_lang$core$List$map, _SimplyNaOH$searchablemenu$SearchableMenu$mapNeverToMsg, config.input);
+		var eventAttributes = {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onInput(_SimplyNaOH$searchablemenu$SearchableMenu$Search),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onBlur(_SimplyNaOH$searchablemenu$SearchableMenu$LostFocus),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onFocus(_SimplyNaOH$searchablemenu$SearchableMenu$Open),
 					_1: {
 						ctor: '::',
-						_0: _SimplyNaOH$searchablemenu$SearchableMenu_OnKeyDown$onKeyDown(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$KeyDown),
+						_0: _SimplyNaOH$searchablemenu$OnKeyDown$onKeyDown(_SimplyNaOH$searchablemenu$SearchableMenu$KeyDown),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Attributes$value(text),
@@ -9019,7 +9163,7 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$textbox = F2(
 			A2(_elm_lang$core$Basics_ops['++'], eventAttributes, customAttributes),
 			{ctor: '[]'});
 	});
-var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$view = F3(
+var _SimplyNaOH$searchablemenu$SearchableMenu$view = F3(
 	function (config, model, data) {
 		var isSelected = function (i) {
 			return A2(
@@ -9052,7 +9196,7 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$view = F3(
 		var dataList = A2(
 			_elm_lang$core$List$indexedMap,
 			viewAndId,
-			A3(_SimplyNaOH$searchablemenu$SearchableMenu_Search$search, model.searchString, config.toId, data));
+			A3(_SimplyNaOH$searchablemenu$Search$search, model.searchString, config.toId, data));
 		var appendix = A2(
 			_elm_lang$core$Maybe$withDefault,
 			{ctor: '[]'},
@@ -9071,8 +9215,8 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$view = F3(
 				},
 				config.append));
 		var list = function () {
-			var _p8 = config.prepend;
-			if (_p8.ctor === 'Nothing') {
+			var _p16 = config.prepend;
+			if (_p16.ctor === 'Nothing') {
 				return A2(_elm_lang$core$Basics_ops['++'], dataList, appendix);
 			} else {
 				return {
@@ -9080,7 +9224,7 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$view = F3(
 					_0: {
 						ctor: '_Tuple2',
 						_0: 'prepend',
-						_1: toLi(_p8._0)
+						_1: toLi(_p16._0)
 					},
 					_1: A2(_elm_lang$core$Basics_ops['++'], dataList, appendix)
 				};
@@ -9088,16 +9232,16 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$view = F3(
 		}();
 		var customDivAttributes = A2(
 			_elm_lang$core$List$map,
-			_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$mapNeverToMsg,
+			_SimplyNaOH$searchablemenu$SearchableMenu$mapNeverToMsg,
 			config.div(model.menuIsOpen));
 		var mouseOnDivAttributes = {
 			ctor: '::',
 			_0: _elm_lang$html$Html_Events$onMouseEnter(
-				_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$SetMouseOver(true)),
+				_SimplyNaOH$searchablemenu$SearchableMenu$SetMouseOver(true)),
 			_1: {
 				ctor: '::',
 				_0: _elm_lang$html$Html_Events$onMouseLeave(
-					_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$SetMouseOver(false)),
+					_SimplyNaOH$searchablemenu$SearchableMenu$SetMouseOver(false)),
 				_1: {ctor: '[]'}
 			}
 		};
@@ -9106,232 +9250,40 @@ var _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$view = F3(
 			A2(_elm_lang$core$Basics_ops['++'], mouseOnDivAttributes, customDivAttributes),
 			{
 				ctor: '::',
-				_0: A2(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$textbox, config, model.searchString),
+				_0: A2(_SimplyNaOH$searchablemenu$SearchableMenu$textbox, config, model.searchString),
 				_1: {
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html_Keyed$ul,
-						A2(_elm_lang$core$List$map, _SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$mapNeverToMsg, config.ul),
+						{
+							ctor: '::',
+							_0: A2(
+								_SimplyNaOH$searchablemenu$OnKeyDown$onKeyDowns,
+								{
+									ctor: '::',
+									_0: 38,
+									_1: {
+										ctor: '::',
+										_0: 40,
+										_1: {
+											ctor: '::',
+											_0: 13,
+											_1: {
+												ctor: '::',
+												_0: 27,
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								},
+								_SimplyNaOH$searchablemenu$SearchableMenu$KeyDown),
+							_1: A2(_elm_lang$core$List$map, _SimplyNaOH$searchablemenu$SearchableMenu$mapNeverToMsg, config.ul)
+						},
 						list),
 					_1: {ctor: '[]'}
 				}
 			});
 	});
-
-var _SimplyNaOH$searchablemenu$SearchableMenu$Model = function (a) {
-	return {ctor: 'Model', _0: a};
-};
-var _SimplyNaOH$searchablemenu$SearchableMenu$initialModel = _SimplyNaOH$searchablemenu$SearchableMenu$Model(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$initialModel);
-var _SimplyNaOH$searchablemenu$SearchableMenu$Msg = function (a) {
-	return {ctor: 'Msg', _0: a};
-};
-var _SimplyNaOH$searchablemenu$SearchableMenu$openMsg = _SimplyNaOH$searchablemenu$SearchableMenu$Msg(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Open);
-var _SimplyNaOH$searchablemenu$SearchableMenu$closeMsg = _SimplyNaOH$searchablemenu$SearchableMenu$Msg(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Close);
-var _SimplyNaOH$searchablemenu$SearchableMenu$selectMsg = function (_p0) {
-	return _SimplyNaOH$searchablemenu$SearchableMenu$Msg(
-		_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Select(_p0));
-};
-var _SimplyNaOH$searchablemenu$SearchableMenu$update = F4(
-	function (_p3, _p2, _p1, data) {
-		var _p4 = _p3;
-		var _p5 = _p2;
-		var _p6 = _p1;
-		var _p7 = A4(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$update, _p4._0, _p5._0, _p6._0, data);
-		var newModel = _p7._0;
-		var menuCommands = _p7._1;
-		var maybeMsg = _p7._2;
-		return {
-			ctor: '_Tuple3',
-			_0: _SimplyNaOH$searchablemenu$SearchableMenu$Model(newModel),
-			_1: A2(_elm_lang$core$Platform_Cmd$map, _SimplyNaOH$searchablemenu$SearchableMenu$Msg, menuCommands),
-			_2: maybeMsg
-		};
-	});
-var _SimplyNaOH$searchablemenu$SearchableMenu$view = F3(
-	function (_p9, _p8, data) {
-		var _p10 = _p9;
-		var _p11 = _p8;
-		return A2(
-			_elm_lang$html$Html$map,
-			_SimplyNaOH$searchablemenu$SearchableMenu$Msg,
-			A3(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$view, _p10._0, _p11._0, data));
-	});
-var _SimplyNaOH$searchablemenu$SearchableMenu$simpleSpanView = F2(
-	function (attributes, result) {
-		return A2(
-			_elm_lang$core$List$map,
-			_elm_lang$html$Html$map(_SimplyNaOH$searchablemenu$SearchableMenu$Msg),
-			A2(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$simpleSpanView, attributes, result));
-	});
-var _SimplyNaOH$searchablemenu$SearchableMenu$UpdateConfig = function (a) {
-	return {ctor: 'UpdateConfig', _0: a};
-};
-var _SimplyNaOH$searchablemenu$SearchableMenu$updateConfig = function (config) {
-	return _SimplyNaOH$searchablemenu$SearchableMenu$UpdateConfig(config);
-};
-var _SimplyNaOH$searchablemenu$SearchableMenu$ViewConfig = function (a) {
-	return {ctor: 'ViewConfig', _0: a};
-};
-var _SimplyNaOH$searchablemenu$SearchableMenu$viewConfig = function (config) {
-	var unboxMsg = function (_p12) {
-		var _p13 = _p12;
-		return _p13._0;
-	};
-	var mapHtmlDetails = function (_p14) {
-		var _p15 = _p14;
-		return {
-			attributes: A2(
-				_elm_lang$core$List$map,
-				_elm_lang$html$Html_Attributes$map(unboxMsg),
-				_p15.attributes),
-			children: A2(
-				_elm_lang$core$List$map,
-				_elm_lang$html$Html$map(unboxMsg),
-				_p15.children)
-		};
-	};
-	var li = F2(
-		function (isSelected, result) {
-			return mapHtmlDetails(
-				A2(config.li, isSelected, result));
-		});
-	var prepend = A2(_elm_lang$core$Maybe$map, mapHtmlDetails, config.prepend);
-	var append = A2(_elm_lang$core$Maybe$map, mapHtmlDetails, config.append);
-	return _SimplyNaOH$searchablemenu$SearchableMenu$ViewConfig(
-		_elm_lang$core$Native_Utils.update(
-			config,
-			{li: li, prepend: prepend, append: append}));
-};
-var _SimplyNaOH$searchablemenu$SearchableMenu$viewConfigWithClasses = function (_p16) {
-	var _p17 = _p16;
-	var _p23 = _p17.toId;
-	var _p22 = _p17.selectedClass;
-	var _p21 = _p17.matchedSpanClass;
-	var _p20 = _p17.liClass;
-	var simpleLiView = F2(
-		function (isSelected, result) {
-			return {
-				attributes: {
-					ctor: '::',
-					_0: isSelected ? _elm_lang$html$Html_Attributes$class(_p22) : _elm_lang$html$Html_Attributes$class(_p20),
-					_1: {ctor: '[]'}
-				},
-				children: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$a,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$href('#0'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									_SimplyNaOH$searchablemenu$SearchableMenu$Msg(
-										_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Select(
-											function (_p18) {
-												return _p23(
-													_elm_lang$core$Tuple$second(_p18));
-											}(result)))),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onBlur(
-										_SimplyNaOH$searchablemenu$SearchableMenu$Msg(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$LostFocus)),
-									_1: {ctor: '[]'}
-								}
-							}
-						},
-						A2(
-							_SimplyNaOH$searchablemenu$SearchableMenu$simpleSpanView,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class(_p21),
-								_1: {ctor: '[]'}
-							},
-							result)),
-					_1: {ctor: '[]'}
-				}
-			};
-		});
-	return _SimplyNaOH$searchablemenu$SearchableMenu$viewConfig(
-		{
-			toId: _p23,
-			div: function (isOpen) {
-				return isOpen ? {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class(_p17.openClass),
-					_1: {ctor: '[]'}
-				} : {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class(_p17.closedClass),
-					_1: {ctor: '[]'}
-				};
-			},
-			ul: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class(_p17.ulClass),
-				_1: {ctor: '[]'}
-			},
-			li: F2(
-				function (isSelected, result) {
-					return A2(
-						_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$HtmlDetails,
-						{
-							ctor: '::',
-							_0: isSelected ? _elm_lang$html$Html_Attributes$class(_p22) : _elm_lang$html$Html_Attributes$class(_p20),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$a,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$href('#0'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(
-											_SimplyNaOH$searchablemenu$SearchableMenu$Msg(
-												_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$Select(
-													function (_p19) {
-														return _p23(
-															_elm_lang$core$Tuple$second(_p19));
-													}(result)))),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onBlur(
-												_SimplyNaOH$searchablemenu$SearchableMenu$Msg(_SimplyNaOH$searchablemenu$SearchableMenu_SearchableMenu$LostFocus)),
-											_1: {ctor: '[]'}
-										}
-									}
-								},
-								A2(
-									_SimplyNaOH$searchablemenu$SearchableMenu$simpleSpanView,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class(_p21),
-										_1: {ctor: '[]'}
-									},
-									result)),
-							_1: {ctor: '[]'}
-						});
-				}),
-			input: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class(_p17.inputClass),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$id(_p17.inputId),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$placeholder(_p17.inputPlaceholder),
-						_1: {ctor: '[]'}
-					}
-				}
-			},
-			prepend: _elm_lang$core$Maybe$Nothing,
-			append: _elm_lang$core$Maybe$Nothing
-		});
-};
 
 var _SimplyNaOH$searchablemenu$Example$openButton = function (menuMsg) {
 	return A2(
@@ -9345,7 +9297,7 @@ var _SimplyNaOH$searchablemenu$Example$openButton = function (menuMsg) {
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onClick(
-						menuMsg(_SimplyNaOH$searchablemenu$SearchableMenu$openMsg)),
+						menuMsg(_SimplyNaOH$searchablemenu$SearchableMenu$Open)),
 					_1: {ctor: '[]'}
 				}
 			}
@@ -9387,7 +9339,7 @@ var _SimplyNaOH$searchablemenu$Example$advancedMenuTopicView = F3(
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onClick(
-								_SimplyNaOH$searchablemenu$SearchableMenu$selectMsg(topic.name)),
+								_SimplyNaOH$searchablemenu$SearchableMenu$Select(topic.name)),
 							_1: {
 								ctor: '::',
 								_0: aStyle,
@@ -9408,68 +9360,67 @@ var _SimplyNaOH$searchablemenu$Example$advancedMenuTopicView = F3(
 		};
 	});
 var _SimplyNaOH$searchablemenu$Example$advancedMenuViewConfig = function (model) {
-	return _SimplyNaOH$searchablemenu$SearchableMenu$viewConfig(
-		{
-			toId: function (_) {
-				return _.name;
-			},
-			div: function (isOpen) {
-				return {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class(
-						isOpen ? 'advanced-menu' : 'advanced-menu advanced-menu--closed'),
-					_1: {ctor: '[]'}
-				};
-			},
-			ul: {
+	return {
+		toId: function (_) {
+			return _.name;
+		},
+		div: function (isOpen) {
+			return {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('advanced-menu__list'),
+				_0: _elm_lang$html$Html_Attributes$class(
+					isOpen ? 'advanced-menu' : 'advanced-menu advanced-menu--closed'),
 				_1: {ctor: '[]'}
-			},
-			li: _SimplyNaOH$searchablemenu$Example$advancedMenuTopicView(model),
-			input: {
+			};
+		},
+		ul: {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('advanced-menu__list'),
+			_1: {ctor: '[]'}
+		},
+		li: _SimplyNaOH$searchablemenu$Example$advancedMenuTopicView(model),
+		input: {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('topic-menu__input2'),
+			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('topic-menu__input2'),
+				_0: _elm_lang$html$Html_Attributes$class('advanced-menu__input'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('advanced-menu__input'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$placeholder('Add a topic'),
-						_1: {ctor: '[]'}
-					}
+					_0: _elm_lang$html$Html_Attributes$placeholder('Add a topic'),
+					_1: {ctor: '[]'}
 				}
-			},
-			prepend: _elm_lang$core$Maybe$Nothing,
-			append: _elm_lang$core$Maybe$Just(
-				{
-					attributes: {ctor: '[]'},
-					children: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$a,
-							{
+			}
+		},
+		prepend: _elm_lang$core$Maybe$Nothing,
+		append: _elm_lang$core$Maybe$Just(
+			{
+				attributes: {ctor: '[]'},
+				children: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$a,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$href('#0'),
+							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$href('#0'),
+								_0: _elm_lang$html$Html_Attributes$class('advanced-menu__close-button'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('advanced-menu__close-button'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(_SimplyNaOH$searchablemenu$SearchableMenu$closeMsg),
-										_1: {ctor: '[]'}
-									}
+									_0: _elm_lang$html$Html_Events$onClick(_SimplyNaOH$searchablemenu$SearchableMenu$Close),
+									_1: {ctor: '[]'}
 								}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('Close'),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
-				})
-		});
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Close'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			})
+	};
 };
 var _SimplyNaOH$searchablemenu$Example$topicMenuViewConfig = _SimplyNaOH$searchablemenu$SearchableMenu$viewConfigWithClasses(
 	{
@@ -9871,59 +9822,59 @@ var _SimplyNaOH$searchablemenu$Example$update = F2(
 							otherTopics: A2(toggle, _p6._0, model.otherTopics)
 						}));
 			case 'TopicMenuMsg':
-				var config = _SimplyNaOH$searchablemenu$SearchableMenu$updateConfig(
-					{
-						toId: function (_) {
-							return _.name;
-						},
-						textboxId: 'topic-menu__input',
-						onSelectMsg: _SimplyNaOH$searchablemenu$Example$ToggleTopic
-					});
+				var config = {
+					toId: function (_) {
+						return _.name;
+					},
+					textboxId: 'topic-menu__input',
+					onSelectMsg: _SimplyNaOH$searchablemenu$Example$ToggleTopic
+				};
 				var _p7 = A4(_SimplyNaOH$searchablemenu$SearchableMenu$update, config, _p6._0, model.topicMenu, _SimplyNaOH$searchablemenu$Example$exampleTopics);
 				var updatedMenu = _p7._0;
 				var menuCmd = _p7._1;
 				var maybeMsg = _p7._2;
+				var updatedModel = _elm_lang$core$Native_Utils.update(
+					model,
+					{topicMenu: updatedMenu});
 				var _p8 = maybeMsg;
 				if (_p8.ctor === 'Nothing') {
 					return {
 						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{topicMenu: updatedMenu}),
-						_1: A2(_elm_lang$core$Platform_Cmd$map, _SimplyNaOH$searchablemenu$Example$TopicMenuMsg, menuCmd)
-					};
-				} else {
-					return A2(
-						attachCmd,
-						A2(_SimplyNaOH$searchablemenu$Example$update, _p8._0, model),
-						A2(_elm_lang$core$Platform_Cmd$map, _SimplyNaOH$searchablemenu$Example$TopicMenuMsg, menuCmd));
-				}
-			case 'AdvancedMenuMsg':
-				var config = _SimplyNaOH$searchablemenu$SearchableMenu$updateConfig(
-					{
-						toId: function (_) {
-							return _.name;
-						},
-						textboxId: 'topic-menu__input2',
-						onSelectMsg: _SimplyNaOH$searchablemenu$Example$ToggleOtherTopic
-					});
-				var _p9 = A4(_SimplyNaOH$searchablemenu$SearchableMenu$update, config, _p6._0, model.advancedMenu, _SimplyNaOH$searchablemenu$Example$exampleTopics);
-				var updatedMenu = _p9._0;
-				var menuCmd = _p9._1;
-				var maybeMsg = _p9._2;
-				var _p10 = maybeMsg;
-				if (_p10.ctor === 'Nothing') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{advancedMenu: updatedMenu}),
+						_0: updatedModel,
 						_1: A2(_elm_lang$core$Platform_Cmd$map, _SimplyNaOH$searchablemenu$Example$AdvancedMenuMsg, menuCmd)
 					};
 				} else {
 					return A2(
 						attachCmd,
-						A2(_SimplyNaOH$searchablemenu$Example$update, _p10._0, model),
+						A2(_SimplyNaOH$searchablemenu$Example$update, _p8._0, updatedModel),
+						A2(_elm_lang$core$Platform_Cmd$map, _SimplyNaOH$searchablemenu$Example$TopicMenuMsg, menuCmd));
+				}
+			case 'AdvancedMenuMsg':
+				var config = {
+					toId: function (_) {
+						return _.name;
+					},
+					textboxId: 'topic-menu__input2',
+					onSelectMsg: _SimplyNaOH$searchablemenu$Example$ToggleOtherTopic
+				};
+				var _p9 = A4(_SimplyNaOH$searchablemenu$SearchableMenu$update, config, _p6._0, model.advancedMenu, _SimplyNaOH$searchablemenu$Example$exampleTopics);
+				var updatedMenu = _p9._0;
+				var menuCmd = _p9._1;
+				var maybeMsg = _p9._2;
+				var updatedModel = _elm_lang$core$Native_Utils.update(
+					model,
+					{advancedMenu: updatedMenu});
+				var _p10 = maybeMsg;
+				if (_p10.ctor === 'Nothing') {
+					return {
+						ctor: '_Tuple2',
+						_0: updatedModel,
+						_1: A2(_elm_lang$core$Platform_Cmd$map, _SimplyNaOH$searchablemenu$Example$AdvancedMenuMsg, menuCmd)
+					};
+				} else {
+					return A2(
+						attachCmd,
+						A2(_SimplyNaOH$searchablemenu$Example$update, _p10._0, updatedModel),
 						A2(_elm_lang$core$Platform_Cmd$map, _SimplyNaOH$searchablemenu$Example$AdvancedMenuMsg, menuCmd));
 				}
 			default:
